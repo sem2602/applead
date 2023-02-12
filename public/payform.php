@@ -31,7 +31,7 @@ $wfp = new Wfp(WFP);
       
         <header class='d-flex flex-row bg-info mb-2'>
             <div class="logo">
-                <img class='logo_img' src="../img/logo_prom.png" height="100">       
+                <img class='logo_img' src="./img/logo_prom.png" height="100">
             </div>
             <div class="errors_alert">
                 <span id="alert"></span>
@@ -78,7 +78,7 @@ $wfp = new Wfp(WFP);
     
     <footer>
     <a href='mailto:localtech.dev@gmail.com?subject="Поддержка пользователя"'>localtech.dev@gmail.com</a>
-    <a href="https://t.me/localtech_dev" target="_blank"><img src="../img/telegram.png" alt=""></a>
+    <a href="https://t.me/localtech_dev" target="_blank"><img src="./img/telegram.png" alt=""></a>
 </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

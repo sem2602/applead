@@ -23,11 +23,25 @@ $data = $index->index($_REQUEST);
 </head>
 <body>
 
-<header class='d-flex flex-row bg-info mb-2'>
+<header class='d-flex bg-info mb-2'>
 
     <div class="ms-3">
         <img src="./public/img/logo_prom.png" height="100">
     </div>
+
+    <?php if($data['user']['id'] == 9): ?>
+        <div class="w-100 row justify-content-center align-items-center text-center">
+            <p class="pt-2 <?= $data['payed']['style'] ?>"><?= $data['payed']['title'] ?></p>
+            <div class="d-flex justify-content-center align-items-center mb-1">
+                <span><?= $data['payed']['text'] ?></span>
+                <form class="mb-0" action="./public/payform.php" method="POST">
+                    <input type="hidden" name="id" value="<?= $data['user']['id'] ?>">
+                    <input type="hidden" name="domain" value="<?= $data['user']['domain'] ?>">
+                    <button class="btn btn-success ms-3" type="submit">Подовжити...</button>
+                </form>
+            </div>
+        </div>
+    <?php endif; ?>
 
 </header>
 

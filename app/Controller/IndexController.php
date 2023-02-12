@@ -41,7 +41,31 @@ class IndexController
             $data['user'] = $user;
             $settings = $this->db->getSettings($user['id']);
             $data['settings'] = $settings;
+            $data['payed'] = $this->checkPayData($user['payed']);
             
+        }
+
+        return $data;
+
+    }
+
+    private function checkPayData($date): array
+    {
+
+        $rest = round((strtotime($date) - strtotime(date('Y-m-d H:i:s'))) / (60 * 60 * 24)) + 1;
+
+        if(strtotime($date) < strtotime(date('Y-m-d H:i:s'))){
+            $data['title'] = 'Необходима оплата для дальнейшего использования приложения!!!';
+            $data['text'] = 'Тестовый период закончился!';
+            $data['style'] = 'text-danger';
+        } elseif ($rest < 7){
+            $data['title'] = `Заканчивается срок использования приложения!!! (кол. дней - <b>`.$rest.`</b>)`;
+            $data['text'] = 'Активно до: '.$date;
+            $data['style'] = 'text-secondary';
+        } else {
+            $data['title'] = '';
+            $data['text'] = 'Активно до: '.$date;
+            $data['style'] = 'text-success';
         }
 
         return $data;
