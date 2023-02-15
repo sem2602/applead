@@ -15,7 +15,7 @@ class DB
         $this->pdo = new PDO('mysql:host='.SERVERNAME.';dbname='. DBNAME, USERNAME, PASSWORD);
     }
 
-    public function getAuth($user_id)
+    public function getAuth($user_id): array
     {
         $sql = 'SELECT client_id, client_secret, auth FROM users WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
@@ -29,14 +29,12 @@ class DB
         return $auth;
     }
     
-    public function setAuth($user_id, $auth)
+    public function setAuth($user_id, $auth): bool
     {
         $sql = 'UPDATE users SET auth = :auth WHERE id = :id';
         $stmt = $this->pdo->prepare($sql);
         $params = [':id' => $user_id, ':auth' => json_encode($auth)];
-        $result = $stmt->execute($params);
-
-        return $result;
+        return $stmt->execute($params);
     }
     
     public function getSettings($user_id): array
@@ -84,7 +82,7 @@ class DB
         $stmt->execute($params);
     }
     
-    public function setUserSettings($data)
+    public function setUserSettings($data): void
     {
         $sql = "INSERT INTO users (client_id, client_secret, auth, domain) VALUES (:client_id, :client_secret, :auth, :domain)";
         $stmt = $this->pdo->prepare($sql);
@@ -154,7 +152,58 @@ class DB
         $stmt->execute($params);
     }
     
-    public function addWfpOrder($user_id)
+    public function getPayedDate($user_id): string
+    {
+        $sql = 'SELECT payed FROM users WHERE id = :id';
+        $stmt = $this->pdo->prepare($sql);
+        $params = [
+            ':id' => $user_id
+        ];
+        $stmt->execute($params);
+
+        $oldDate = $stmt->fetchColumn();
+        
+        if(strtotime(date('Y-m-d H:i:s')) > strtotime($oldDate)){
+            $oldDate = date('Y-m-d H:i:s');
+        }
+        
+        return $oldDate;
+        
+    }
+    
+    public function addPayedPeriod($obj): bool
+    {
+        $newDate = match ($obj['amount']) {
+            '200' => strtotime($obj['date'] . " +30 days"),
+            '500' => strtotime($obj['date'] . " +90 days"),
+            '900' => strtotime($obj['date'] . " +180 days"),
+            '1700' => strtotime($obj['date'] . " +360 days"),
+            default => strtotime($obj['date'] . " +3 days"),
+        };
+
+        $newDate = date('Y-m-d H:i:s', $newDate);
+
+        $stmt = $this->pdo->prepare("UPDATE users SET payed = :payed WHERE id = :id");
+        $params = [
+            ':id' => $obj['user_id'],
+            ':payed' => $newDate,
+        ];
+        $stmt->execute($params);
+
+
+        $stmt = $this->pdo->prepare("UPDATE orders_wfp SET amount = :amount, status = :status, updated = :updated WHERE id = :id");
+        $params = [
+            ':id' => $obj['order_id'],
+            ':amount' => $obj['amount'],
+            ':status' => $obj['status'],
+            ':updated' => date('Y-m-d H:i:s')
+        ];
+
+        return $stmt->execute($params);
+
+    }
+    
+    public function addWfpOrder($user_id): int
     {
         
         $sql = 'INSERT INTO `orders_wfp` (`user_id`, `status`) VALUES (:user_id, :status)';
@@ -168,6 +217,18 @@ class DB
         $stmt->execute($params);
         return (int)$this->pdo->lastInsertId();
         
+    }
+    
+    public function getWfpOrderById($id): array
+    {
+        $sql = "SELECT * FROM orders_wfp WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        $params = [
+            ':id' => $id
+        ];
+        $stmt->execute($params);
+
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
 }

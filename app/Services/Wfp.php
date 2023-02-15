@@ -4,8 +4,8 @@ namespace App\Services;
 
 class Wfp {
     
-    private $settings;
-    private $time;
+    private array $settings;
+    private string $time;
     
     public function __construct ($settings)
     {
@@ -13,7 +13,8 @@ class Wfp {
         $this->time = strtotime(date('Y-m-d H:i:s'));
     }
     
-    public function getForm($order_id, $price){
+    public function getForm($order_id, $price): string
+    {
         
         $sing = $this->getSign($order_id, $price);
         
@@ -34,7 +35,8 @@ class Wfp {
         
     }
     
-    private function getSign($order_id, $price){
+    private function getSign($order_id, $price): string
+    {
         
         $data = [
             "merchantAccount" => $this->settings['merchantAccount'],
@@ -50,6 +52,25 @@ class Wfp {
         
         return hash_hmac("md5", implode(';', $data), $this->settings['key']);
         
+    }
+    
+    public function genResponse($orderReference): array
+    {
+        $response = [
+            'orderReference' => $orderReference,
+            'status' => 'accept',
+            'time' => strtotime(date('Y-m-d H:i:s')),
+        ];
+        
+        $response['signature'] = $this->getResponseSign($response);
+
+        return $response;
+    }
+    
+    private function getResponseSign($data): string
+    {
+        $signString = implode(';', $data); // конкатенируем значения через символ ";"
+        return hash_hmac("md5",$signString, $this->settings['key']);
     }
     
 }
