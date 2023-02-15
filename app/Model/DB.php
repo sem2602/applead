@@ -84,13 +84,17 @@ class DB
     
     public function setUserSettings($data): void
     {
-        $sql = "INSERT INTO users (client_id, client_secret, auth, domain) VALUES (:client_id, :client_secret, :auth, :domain)";
+
+        $payed = date('Y-m-d H:i:s', strtotime(date('Y-m-d H:i:s') . " +".TRIAL." days"));
+
+        $sql = "INSERT INTO users (client_id, client_secret, auth, domain, payed) VALUES (:client_id, :client_secret, :auth, :domain, :payed)";
         $stmt = $this->pdo->prepare($sql);
         $params = [
             ':client_id' => $data['client_id'],
             ':client_secret' => $data['client_secret'],
             ':auth' => $data['auth'],
             ':domain' => $data['domain'],
+            ':payed' => $payed,
         ];
         $stmt->execute($params);
         
