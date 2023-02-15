@@ -55,11 +55,11 @@ class IndexController
         $rest = round((strtotime($date) - strtotime(date('Y-m-d H:i:s'))) / (60 * 60 * 24)) + 1;
 
         if(strtotime($date) < strtotime(date('Y-m-d H:i:s'))){
-            $data['title'] = 'Необходима оплата для дальнейшего использования приложения!!!';
-            $data['text'] = 'Тестовый период закончился!';
+            $data['title'] = 'Необхідна оплата для подальшого використання програми!!!';
+            $data['text'] = 'Тестовий період скінчився!';
             $data['style'] = 'text-danger';
         } elseif ($rest < 7){
-            $data['title'] = `Заканчивается срок использования приложения!!! (кол. дней - <b>`.$rest.`</b>)`;
+            $data['title'] = `Закінчується строк використання програми!!! (кіль. днів - <b>`.$rest.`</b>)`;
             $data['text'] = 'Активно до: '.$date;
             $data['style'] = 'text-secondary';
         } else {
